@@ -201,3 +201,4 @@ export const ProposalEditor: React.FC<ProposalEditorProps> = ({ data, onUpdate }
     </div>
   );
 };
+
