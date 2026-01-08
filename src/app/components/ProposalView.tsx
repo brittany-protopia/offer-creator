@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { CheckCircle, ShieldCheck, Zap, FileText, Server, Lock } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import protopiaLogo from 'figma:asset/20ab046981c8bec96a50b5288ccb7c6fd14937ef.png';
+const protopiaLogo = "/logo.png"; // Replace with your logo URL or local file path
 
 interface ProposalViewProps {
   data: ProposalData;
