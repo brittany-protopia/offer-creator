@@ -1,18 +1,25 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ProposalData } from '../types';
 import { Timeline } from './Timeline';
 import { format } from 'date-fns';
-import { CheckCircle, ShieldCheck, Zap, FileText, Server, Lock } from 'lucide-react';
+import { CheckCircle, ShieldCheck, Zap, FileText, Server, Lock, ArrowRight, ExternalLink } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+
 const protopiaLogo = "/logo.png"; // Replace with your logo URL or local file path
 
 interface ProposalViewProps {
   data: ProposalData;
+  isViewMode?: boolean;
 }
 
-export const ProposalView: React.FC<ProposalViewProps> = ({ data }) => {
+export const ProposalView: React.FC<ProposalViewProps> = ({ data, isViewMode = false }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [error, setError] = useState(false);
+
   const currencyFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: data.currency,
@@ -20,6 +27,63 @@ export const ProposalView: React.FC<ProposalViewProps> = ({ data }) => {
   });
 
   const formattedFee = currencyFormatter.format(data.licenseFee);
+
+  // If not in view mode (i.e. editor mode), we are always authenticated
+  useEffect(() => {
+    if (!isViewMode) {
+      setIsAuthenticated(true);
+    }
+  }, [isViewMode]);
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordInput.trim().toLowerCase() === data.prospectName.trim().toLowerCase()) {
+      setIsAuthenticated(true);
+      setError(false);
+    } else {
+      setError(true);
+    }
+  };
+
+  // Password Gate
+  if (data.passwordProtection && isViewMode && !isAuthenticated) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4" style={{ fontFamily: "'Fustat', sans-serif" }}>
+        <Card className="w-full max-w-md shadow-xl border-gray-200">
+          <CardHeader className="text-center space-y-2 pb-6 border-b border-gray-100">
+             <div className="flex justify-center mb-4">
+                <div className="w-12 h-12 bg-[#3D3DF5]/10 rounded-full flex items-center justify-center text-[#3D3DF5]">
+                  <Lock className="w-6 h-6" />
+                </div>
+             </div>
+             <CardTitle className="text-xl font-bold text-gray-900">Protected Proposal</CardTitle>
+             <p className="text-sm text-gray-500">
+               Please enter your company name to view this proposal.
+             </p>
+          </CardHeader>
+          <CardContent className="pt-8">
+             <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                <div className="space-y-2">
+                   <Label htmlFor="password">Company Name</Label>
+                   <Input 
+                      id="password"
+                      type="text" 
+                      placeholder={data.prospectName ? "e.g. Acme Corp" : "Enter company name"}
+                      value={passwordInput}
+                      onChange={(e) => setPasswordInput(e.target.value)}
+                      className={error ? "border-red-500 focus-visible:ring-red-500" : ""}
+                   />
+                   {error && <p className="text-xs text-red-500 font-medium">Incorrect company name. Please try again.</p>}
+                </div>
+                <Button type="submit" className="w-full bg-[#3D3DF5] hover:bg-[#2b2bb8]">
+                   View Proposal <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+             </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#f5f5ff] via-white to-[#f0fff7] text-gray-900 selection:bg-[#3D3DF5] selection:text-white" style={{ fontFamily: "'Fustat', sans-serif" }}>
@@ -35,6 +99,12 @@ export const ProposalView: React.FC<ProposalViewProps> = ({ data }) => {
         <header className="flex justify-between items-center mb-16">
           <div className="flex items-center gap-4">
             <img src={protopiaLogo} alt="Protopia Logo" className="h-8 w-auto" />
+            {data.customerLogoUrl && (
+              <>
+                <span className="text-gray-300 text-xl font-light">×</span>
+                <img src={data.customerLogoUrl} alt="Customer Logo" className="h-8 w-auto object-contain max-w-[150px]" />
+              </>
+            )}
           </div>
           <div className="text-sm font-medium text-gray-500 uppercase tracking-widest border-l pl-4 border-gray-300">
              Activation Proposal
@@ -42,7 +112,7 @@ export const ProposalView: React.FC<ProposalViewProps> = ({ data }) => {
         </header>
 
         {/* Hero / Offer Section */}
-        <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
+        <div className="grid md:grid-cols-2 gap-12 items-center mb-8">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3D3DF5]/5 text-[#3D3DF5] text-xs font-bold uppercase tracking-wide mb-6 border border-[#3D3DF5]/10">
               <Zap className="w-3 h-3" />
@@ -99,6 +169,28 @@ export const ProposalView: React.FC<ProposalViewProps> = ({ data }) => {
             </Card>
           </div>
         </div>
+
+        {/* Resources Bar */}
+        {(data.resources || []).length > 0 && (
+          <div className="flex flex-wrap items-center justify-start gap-4 mb-20">
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-400 mr-2">Resources:</span>
+            {(data.resources || []).map((res, idx) => (
+              <a 
+                key={idx} 
+                href={res.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="group flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100 text-sm font-medium text-gray-600 hover:text-[#3D3DF5] hover:border-[#3D3DF5]/30 hover:shadow-md transition-all"
+              >
+                <div className="w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-[#3D3DF5]/10 group-hover:text-[#3D3DF5] flex items-center justify-center transition-colors">
+                   <FileText className="w-3 h-3" />
+                </div>
+                {res.title}
+                <ExternalLink className="w-3 h-3 opacity-30 group-hover:opacity-100 transition-opacity" />
+              </a>
+            ))}
+          </div>
+        )}
 
         {/* Timeline Section */}
         <section className="mb-20">
@@ -196,7 +288,7 @@ export const ProposalView: React.FC<ProposalViewProps> = ({ data }) => {
           </div>
 
           <div className="text-center md:text-left text-xs text-gray-400">
-            © {new Date().getFullYear()} Protopia Inc. Confidential. This proposal is valid until {format(new Date(data.effectiveDate.getTime() + 7 * 24 * 60 * 60 * 1000), 'MMM d, yyyy')}.
+            © {new Date().getFullYear()} Protopia Inc. Confidential. This proposal is valid until {format(new Date(data.validUntil || new Date()), 'MMM d, yyyy')}.
           </div>
         </footer>
 

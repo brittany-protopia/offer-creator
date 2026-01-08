@@ -1,11 +1,12 @@
 
 import React from 'react';
-import { ProposalData, Milestone } from '../types';
+import { ProposalData, Milestone, Resource } from '../types';
 import { format } from 'date-fns';
-import { Plus, Trash2, Calendar as CalendarIcon } from 'lucide-react';
+import { Plus, Trash2, Calendar as CalendarIcon, Link as LinkIcon, Lock, Upload } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { Switch } from './ui/switch';
 import { Textarea } from './ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
@@ -51,6 +52,23 @@ export const ProposalEditor: React.FC<ProposalEditorProps> = ({ data, onUpdate }
     onUpdate({ ...data, milestones: newMilestones });
   };
 
+  const handleResourceChange = (index: number, field: keyof Resource, value: string) => {
+    const newResources = [...(data.resources || [])];
+    newResources[index] = { ...newResources[index], [field]: value };
+    onUpdate({ ...data, resources: newResources });
+  };
+
+  const addResource = () => {
+    if ((data.resources || []).length >= 3) return;
+    const newResource: Resource = { title: "New Resource", url: "https://" };
+    onUpdate({ ...data, resources: [...(data.resources || []), newResource] });
+  };
+
+  const removeResource = (index: number) => {
+    const newResources = (data.resources || []).filter((_, i) => i !== index);
+    onUpdate({ ...data, resources: newResources });
+  };
+
   return (
     <div className="h-full overflow-y-auto p-6 bg-white border-r border-gray-200">
       <h2 className="text-lg font-bold mb-6 text-gray-900">Customize Proposal</h2>
@@ -69,6 +87,45 @@ export const ProposalEditor: React.FC<ProposalEditorProps> = ({ data, onUpdate }
                 value={data.prospectName} 
                 onChange={(e) => handleInputChange('prospectName', e.target.value)} 
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="customerLogo">Customer Logo</Label>
+              <div className="flex gap-2">
+                 <Input 
+                   id="customerLogo" 
+                   value={data.customerLogoUrl || ''} 
+                   onChange={(e) => handleInputChange('customerLogoUrl', e.target.value)} 
+                   placeholder="https://... or upload"
+                 />
+                 <div className="relative w-10 overflow-hidden">
+                    <input
+                      type="file"
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.size > 500000) {
+                             alert("File is too large. Please use a smaller image or a URL to prevent share link errors.");
+                             return;
+                          }
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            handleInputChange('customerLogoUrl', reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <Button variant="outline" size="icon" className="w-full">
+                       <Upload className="w-4 h-4" />
+                    </Button>
+                 </div>
+              </div>
+              <p className="text-[10px] text-gray-400">
+                 Use a public URL or upload a small image (max 500KB).
+              </p>
             </div>
             
             <div className="space-y-2">
@@ -92,7 +149,7 @@ export const ProposalEditor: React.FC<ProposalEditorProps> = ({ data, onUpdate }
             </div>
 
             <div className="space-y-2">
-              <Label>Value Highlights (Upper Right Box)</Label>
+              <Label>Activation Milestones (Upper Right Box)</Label>
               <div className="space-y-2">
                 {[0, 1, 2].map((i) => (
                   <Input 
@@ -131,6 +188,80 @@ export const ProposalEditor: React.FC<ProposalEditorProps> = ({ data, onUpdate }
                 placeholder="https://calendly.com/your-link"
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Configuration */}
+        <Card>
+          <CardHeader className="pb-3">
+             <CardTitle className="text-sm font-medium uppercase tracking-wide text-gray-500">Configuration</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+             {/* Expiration Date */}
+             <div className="space-y-2">
+               <Label htmlFor="validUntil">Offer Valid Until</Label>
+               <Input 
+                 type="date" 
+                 id="validUntil"
+                 value={data.validUntil ? format(data.validUntil, 'yyyy-MM-dd') : ''}
+                 onChange={(e) => handleInputChange('validUntil', new Date(e.target.value))} 
+               />
+             </div>
+
+             {/* Password Protection */}
+             <div className="flex items-center justify-between space-x-2 border p-3 rounded-lg bg-gray-50">
+                <div className="flex items-center gap-2">
+                   <Lock className="w-4 h-4 text-gray-500" />
+                   <Label htmlFor="password-mode" className="font-medium cursor-pointer">Password Protection</Label>
+                </div>
+                <Switch 
+                  id="password-mode"
+                  checked={data.passwordProtection}
+                  onCheckedChange={(checked) => handleInputChange('passwordProtection', checked)}
+                />
+             </div>
+             {data.passwordProtection && (
+                <p className="text-xs text-gray-500 bg-yellow-50 p-2 rounded border border-yellow-100">
+                   When enabled, visitors must enter "{data.prospectName}" to view the proposal.
+                </p>
+             )}
+
+             {/* Resources */}
+             <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                   <Label>Resources (Below Hero)</Label>
+                   <span className="text-xs text-gray-400">{(data.resources || []).length}/3</span>
+                </div>
+                
+                {(data.resources || []).map((resource, index) => (
+                   <div key={index} className="space-y-2 p-3 border rounded-lg bg-gray-50 relative">
+                       <button 
+                         onClick={() => removeResource(index)}
+                         className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                       >
+                         <Trash2 className="w-3 h-3" />
+                       </button>
+                       <Input 
+                         value={resource.title}
+                         onChange={(e) => handleResourceChange(index, 'title', e.target.value)}
+                         placeholder="Resource Title"
+                         className="h-8 text-sm"
+                       />
+                       <Input 
+                         value={resource.url}
+                         onChange={(e) => handleResourceChange(index, 'url', e.target.value)}
+                         placeholder="https://..."
+                         className="h-8 text-sm text-gray-500"
+                       />
+                   </div>
+                ))}
+
+                {(data.resources || []).length < 3 && (
+                   <Button onClick={addResource} variant="outline" size="sm" className="w-full">
+                      <Plus className="w-3 h-3 mr-2" /> Add Resource
+                   </Button>
+                )}
+             </div>
           </CardContent>
         </Card>
 

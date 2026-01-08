@@ -8,28 +8,44 @@ export interface Milestone {
   completed?: boolean;
 }
 
+export interface Resource {
+  title: string;
+  url: string;
+}
+
 export interface ProposalData {
   prospectName: string;
+  customerLogoUrl: string;
   repName: string;
   repEmail: string;
   licenseFee: number;
   currency: string;
   effectiveDate: Date;
+  validUntil: Date;
   modelType: string;
   calendlyUrl: string;
   valueBullets: string[];
   milestones: Milestone[];
+  resources: Resource[];
+  passwordProtection: boolean;
 }
 
 export const defaultProposal: ProposalData = {
   prospectName: "Acme Corp",
+  customerLogoUrl: "",
   repName: "Sarah Jenkins",
   repEmail: "sarah@protopia.com",
   licenseFee: 60000,
   currency: "USD",
   effectiveDate: new Date(),
+  validUntil: new Date(new Date().setDate(new Date().getDate() + 14)),
   modelType: "Llama 3 70B",
   calendlyUrl: "https://calendly.com",
+  passwordProtection: false,
+  resources: [
+    { title: "Stained Glass Whitepaper", url: "#" },
+    { title: "Technical Documentation", url: "#" }
+  ],
   valueBullets: [
     "Deploy your endpoint within 45 days",
     "Demo a privacy preserving use case",

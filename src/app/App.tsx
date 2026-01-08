@@ -251,7 +251,7 @@ export default function App() {
 
         {/* Preview */}
         <div className="min-h-full">
-          <ProposalView data={data} />
+          <ProposalView data={data} isViewMode={isViewMode} />
         </div>
       </div>
     </div>
