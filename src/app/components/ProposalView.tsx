@@ -100,6 +100,25 @@ export const ProposalView: React.FC<ProposalViewProps> = ({ data }) => {
           </div>
         </div>
 
+        {/* Timeline Section */}
+        <section className="mb-20">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Path to Activation</h2>
+            <p className="text-gray-500 max-w-2xl mx-auto">
+              We've outlined a clear {data.milestones.length}-step plan to get you live. 
+              Below is the collaborative timeline to achieve our joint goals.
+            </p>
+          </div>
+          
+          <div className="bg-white/50 backdrop-blur-sm rounded-3xl border border-white/50 shadow-xl p-8">
+            <Timeline 
+              milestones={data.milestones} 
+              prospectName={data.prospectName}
+              startDate={data.effectiveDate}
+            />
+          </div>
+        </section>
+
         {/* New License Section */}
         <section className="mb-20">
              <div className="bg-white rounded-3xl border border-gray-100 shadow-lg overflow-hidden">
@@ -147,42 +166,22 @@ export const ProposalView: React.FC<ProposalViewProps> = ({ data }) => {
              </div>
         </section>
 
-        {/* Timeline Section */}
-        <section className="mb-20">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Path to Activation</h2>
-            <p className="text-gray-500 max-w-2xl mx-auto">
-              We've outlined a clear {data.milestones.length}-step plan to get you live. 
-              Below is the collaborative timeline to achieve our joint goals.
-            </p>
-          </div>
-          
-          <div className="bg-white/50 backdrop-blur-sm rounded-3xl border border-white/50 shadow-xl p-8">
-            <Timeline 
-              milestones={data.milestones} 
-              prospectName={data.prospectName}
-              startDate={data.effectiveDate}
-            />
-          </div>
-        </section>
-
         {/* Signature / Footer */}
         <footer className="border-t border-gray-200 pt-10">
           <div className="grid md:grid-cols-2 gap-12 mb-12">
-             <div className="space-y-8">
-              <h3 className="font-bold text-gray-900">Agreement</h3>
-              <div className="space-y-4">
-                 <p className="text-sm text-gray-600">
-                   By signing below, {data.prospectName} agrees to the activation terms outlined above. 
-                   The credit of {formattedFee} will be issued upon completion of all milestones within 45 days.
+             <div className="space-y-6">
+              <h3 className="font-bold text-gray-900">Ready to move forward?</h3>
+              <div className="bg-gradient-to-br from-[#3D3DF5]/5 to-[#7070FF]/5 rounded-2xl border border-[#3D3DF5]/10 p-8 text-center space-y-6">
+                 <p className="text-lg text-gray-800 font-medium leading-relaxed">
+                   Interested? Click here to take the next step.
                  </p>
-                 <div className="h-32 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 flex flex-col items-center justify-center text-gray-400 print:border-gray-800">
-                    <span className="font-handwriting text-2xl italic opacity-50">Sign here</span>
-                 </div>
-                 <div className="flex justify-between text-sm text-gray-500 border-t border-gray-300 pt-2">
-                    <span>Authorized Signature</span>
-                    <span>Date</span>
-                 </div>
+                 <Button 
+                   size="lg" 
+                   className="w-full sm:w-auto bg-[#3D3DF5] hover:bg-[#2b2bb8] text-white shadow-lg shadow-[#3D3DF5]/20 text-lg py-6"
+                   onClick={() => window.open(data.calendlyUrl, '_blank')}
+                 >
+                   Claim my Offer
+                 </Button>
               </div>
              </div>
 

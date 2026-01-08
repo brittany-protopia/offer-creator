@@ -16,6 +16,7 @@ export interface ProposalData {
   currency: string;
   effectiveDate: Date;
   modelType: string;
+  calendlyUrl: string;
   valueBullets: string[];
   milestones: Milestone[];
 }
@@ -28,6 +29,7 @@ export const defaultProposal: ProposalData = {
   currency: "USD",
   effectiveDate: new Date(),
   modelType: "Llama 3 70B",
+  calendlyUrl: "https://calendly.com",
   valueBullets: [
     "Deploy your endpoint within 45 days",
     "Demo a privacy preserving use case",

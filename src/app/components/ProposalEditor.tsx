@@ -121,6 +121,16 @@ export const ProposalEditor: React.FC<ProposalEditorProps> = ({ data, onUpdate }
                 onChange={(e) => handleInputChange('repEmail', e.target.value)} 
               />
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="calendlyUrl">Calendly / Meeting URL</Label>
+              <Input 
+                id="calendlyUrl" 
+                value={data.calendlyUrl || ''} 
+                onChange={(e) => handleInputChange('calendlyUrl', e.target.value)}
+                placeholder="https://calendly.com/your-link"
+              />
+            </div>
           </CardContent>
         </Card>
 
