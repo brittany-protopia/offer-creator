@@ -27,6 +27,7 @@ export default function App() {
   // New state for custom base URL support
   const [baseUrl, setBaseUrl] = useState('');
   const [encodedData, setEncodedData] = useState('');
+  const [isViewMode, setIsViewMode] = useState(false);
 
   // Migration effect: Ensure valueBullets exists if it's missing from current state
   // This handles hot-reloading or existing state sessions
@@ -48,6 +49,12 @@ export default function App() {
       setBaseUrl(hostUrlParam);
     } else {
       setBaseUrl(`${window.location.origin}${window.location.pathname}`);
+    }
+
+    const isViewModeParam = params.get('view') === 'true';
+    if (isViewModeParam) {
+      setIsEditorOpen(false);
+      setIsViewMode(true);
     }
 
     const sharedData = params.get('data');
@@ -86,7 +93,7 @@ export default function App() {
     if (encodedData && baseUrl) {
         // Remove trailing slash if present to avoid double slashes, but careful with root path
         const cleanBase = baseUrl.endsWith('/') && baseUrl.length > 1 ? baseUrl.slice(0, -1) : baseUrl;
-        setShareUrl(`${cleanBase}?data=${encodedData}`);
+        setShareUrl(`${cleanBase}?data=${encodedData}&view=true`);
     }
   }, [baseUrl, encodedData]);
 
@@ -109,7 +116,7 @@ export default function App() {
       
       // Use current baseUrl if available, otherwise fallback to location
       const currentBaseUrl = baseUrl || `${window.location.origin}${window.location.pathname}`;
-      const url = `${currentBaseUrl}?data=${encoded}`;
+      const url = `${currentBaseUrl}?data=${encoded}&view=true`;
       setShareUrl(url);
 
       // Try to copy to clipboard automatically
@@ -211,6 +218,7 @@ export default function App() {
       <div className="flex-1 relative overflow-y-auto overflow-x-hidden">
         {/* Floating Controls */}
         <div className="fixed top-4 left-4 z-50 flex gap-2 print:hidden">
+          {!isViewMode && (
           <Button 
             variant="outline" 
             size="icon" 
@@ -220,6 +228,7 @@ export default function App() {
           >
             {isEditorOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
           </Button>
+          )}
           
           <Button 
             variant="outline" 
