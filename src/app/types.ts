@@ -4,7 +4,7 @@ export interface Milestone {
   date: Date;
   title: string;
   description: string;
-  owner: 'protopia' | 'prospect';
+  owner: 'protopia' | 'prospect' | 'both';
   completed?: boolean;
 }
 

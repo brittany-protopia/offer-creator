@@ -21,8 +21,9 @@ export const Timeline: React.FC<TimelineProps> = ({ milestones, prospectName, st
   };
 
   const tracks = [
-    { id: 'protopia', label: 'Protopia', color: 'blue' },
-    { id: 'prospect', label: prospectName, color: 'green' },
+    { id: 'protopia', label: 'Protopia', color: '#3D3DF5', bg: 'rgba(61, 61, 245, 0.1)', text: 'text-[#3D3DF5]' },
+    { id: 'both', label: 'Joint Effort', color: '#3D6EF5', bg: 'rgba(61, 110, 245, 0.1)', text: 'text-[#3D6EF5]' },
+    { id: 'prospect', label: prospectName, color: '#26D980', bg: 'rgba(38, 217, 128, 0.1)', text: 'text-[#26D980]' },
   ];
 
   return (
@@ -42,22 +43,20 @@ export const Timeline: React.FC<TimelineProps> = ({ milestones, prospectName, st
              })}
         </div>
 
-        <div className="space-y-20 relative z-10 py-4">
+        <div className="space-y-16 relative z-10 py-4">
           {tracks.map((track) => (
             <div key={track.id} className="relative h-12 flex items-center">
               {/* Track Label - Positioned in the left padding area */}
               <div className={cn(
                   "absolute -left-28 w-24 text-right font-bold text-sm truncate",
-                  track.id === 'protopia' ? "text-[#3D3DF5]" : "text-[#26D980]"
+                  track.text
               )} title={track.label}>
                 {track.label}
               </div>
 
               {/* Track Line */}
-              <div className={cn(
-                  "w-full h-2 rounded-full relative",
-                  track.id === 'protopia' ? "bg-indigo-50" : "bg-emerald-50"
-              )} style={{ backgroundColor: track.id === 'protopia' ? 'rgba(61, 61, 245, 0.1)' : 'rgba(38, 217, 128, 0.1)' }}>
+              <div className="w-full h-2 rounded-full relative" 
+                   style={{ backgroundColor: track.bg }}>
               </div>
 
               {/* Milestones for this track */}
@@ -82,12 +81,12 @@ export const Timeline: React.FC<TimelineProps> = ({ milestones, prospectName, st
                           "group-hover:scale-110 group-hover:shadow-md"
                         )}
                         style={{ 
-                          borderColor: track.id === 'protopia' ? '#3D3DF5' : '#26D980'
+                          borderColor: track.color
                         }}
                       >
                         <div 
                             className="w-2.5 h-2.5 rounded-full" 
-                            style={{ backgroundColor: track.id === 'protopia' ? '#3D3DF5' : '#26D980' }}
+                            style={{ backgroundColor: track.color }}
                         />
                       </div>
 

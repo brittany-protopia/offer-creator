@@ -312,7 +312,7 @@ export const ProposalEditor: React.FC<ProposalEditorProps> = ({ data, onUpdate }
                      <Label className="text-xs text-gray-500">Owner</Label>
                      <Select 
                       value={milestone.owner} 
-                      onValueChange={(val: 'protopia' | 'prospect') => handleMilestoneChange(index, 'owner', val)}
+                      onValueChange={(val: 'protopia' | 'prospect' | 'both') => handleMilestoneChange(index, 'owner', val)}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -320,6 +320,7 @@ export const ProposalEditor: React.FC<ProposalEditorProps> = ({ data, onUpdate }
                       <SelectContent>
                         <SelectItem value="protopia">Protopia</SelectItem>
                         <SelectItem value="prospect">Prospect</SelectItem>
+                        <SelectItem value="both">Joint Effort</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

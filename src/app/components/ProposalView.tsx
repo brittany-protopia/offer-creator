@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ProposalData } from '../types';
 import { Timeline } from './Timeline';
 import { format } from 'date-fns';
-import { CheckCircle, ShieldCheck, Zap, FileText, Server, Lock, ArrowRight, ExternalLink } from 'lucide-react';
+import { CheckCircle, ShieldCheck, Zap, FileText, Server, Lock, ArrowRight, ExternalLink, Clock } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
@@ -129,6 +129,14 @@ export const ProposalView: React.FC<ProposalViewProps> = ({ data, isViewMode = f
               <br className="mb-2 block"/>
               Commit to your activation timeline within 45 days, and <strong>earn your money back</strong>—receiving a credit for your entire <span className="whitespace-nowrap font-bold text-gray-900">{formattedFee}</span> license fee.
             </p>
+
+            {data.validUntil && (
+               <div className="mb-6 inline-flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-700 rounded-lg text-sm font-semibold border border-amber-200">
+                  <Clock className="w-4 h-4" />
+                  <span>Offer valid until {format(new Date(data.validUntil), 'MMMM d, yyyy')}</span>
+               </div>
+            )}
+
             <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" className="bg-[#3D3DF5] hover:bg-[#2b2bb8] text-white shadow-xl shadow-[#3D3DF5]/20 transition-transform hover:-translate-y-0.5">
                 Accept Offer
@@ -272,7 +280,7 @@ export const ProposalView: React.FC<ProposalViewProps> = ({ data, isViewMode = f
                    className="w-full sm:w-auto bg-[#3D3DF5] hover:bg-[#2b2bb8] text-white shadow-lg shadow-[#3D3DF5]/20 text-lg py-6"
                    onClick={() => window.open(data.calendlyUrl, '_blank')}
                  >
-                   Claim my Offer
+                   Accept Offer
                  </Button>
               </div>
              </div>
