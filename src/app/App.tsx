@@ -327,7 +327,7 @@ export default function App() {
 
           <Button 
             variant="outline" 
-            onClick={handleShare}
+            onClick={() => handleShare(false)}
             className="bg-white shadow-md border-gray-200 hover:bg-gray-50 gap-2 text-[#3D3DF5] border-[#3D3DF5]/20 hover:bg-[#3D3DF5]/5"
           >
             <Share2 className="w-4 h-4" />
