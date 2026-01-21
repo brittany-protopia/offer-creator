@@ -187,7 +187,7 @@ export default function App() {
       <Toaster position="top-center" />
       
       <Dialog open={isEditPasswordDialogOpen} onOpenChange={setIsEditPasswordDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white">
            <DialogHeader>
              <DialogTitle>Enter Admin Password</DialogTitle>
              <DialogDescription>
@@ -210,7 +210,7 @@ export default function App() {
       </Dialog>
 
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white">
           <DialogHeader>
             <DialogTitle>Share Proposal</DialogTitle>
             <DialogDescription>
