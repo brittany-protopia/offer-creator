@@ -149,7 +149,7 @@ export const ProposalEditor: React.FC<ProposalEditorProps> = ({ data, onUpdate }
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="promotionText">Intro Text Suffix</Label>
+              <Label htmlFor="promotionText">Compelling Event</Label>
               <Input 
                 id="promotionText" 
                 value={data.promotionText || ''} 

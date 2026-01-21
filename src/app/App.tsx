@@ -22,6 +22,8 @@ export default function App() {
   const [data, setData] = useState<ProposalData>(defaultProposal);
   const [isEditorOpen, setIsEditorOpen] = useState(true);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [isEditPasswordDialogOpen, setIsEditPasswordDialogOpen] = useState(false);
+  const [editPasswordInput, setEditPasswordInput] = useState('');
   const [shareUrl, setShareUrl] = useState('');
   
   // New state for custom base URL support
@@ -97,13 +99,20 @@ export default function App() {
     }
   }, [baseUrl, encodedData]);
 
+  // Re-generate encoded data when data changes (specifically password) while dialog is open
+  useEffect(() => {
+     if (isShareDialogOpen) {
+        handleShare(true); // silent update
+     }
+  }, [data.viewPassword]);
+
   const toggleEditor = () => setIsEditorOpen(!isEditorOpen);
 
   const handlePrint = () => {
     window.print();
   };
 
-  const handleShare = async () => {
+  const handleShare = async (silent = false) => {
     try {
       const json = JSON.stringify(data);
       // Encode Base64 with Unicode support
@@ -119,17 +128,19 @@ export default function App() {
       const url = `${currentBaseUrl}?data=${encoded}&view=true`;
       setShareUrl(url);
 
-      // Try to copy to clipboard automatically
-      try {
-        await navigator.clipboard.writeText(url);
-        toast.success('Share link copied to clipboard');
-      } catch (clipboardError) {
-        // If clipboard fails (e.g. permissions), open the dialog
+      if (!silent) {
+        // Try to copy to clipboard automatically
+        try {
+            await navigator.clipboard.writeText(url);
+            toast.success('Share link copied to clipboard');
+        } catch (clipboardError) {
+            // If clipboard fails (e.g. permissions), open the dialog
+            setIsShareDialogOpen(true);
+        }
+        
+        // Always open dialog to allow URL customization
         setIsShareDialogOpen(true);
       }
-      
-      // Always open dialog to allow URL customization
-      setIsShareDialogOpen(true);
       
     } catch (e) {
       toast.error('Failed to generate link');
@@ -151,10 +162,53 @@ export default function App() {
     }
   };
 
+  const handleEditProposalClick = () => {
+    setEditPasswordInput('');
+    setIsEditPasswordDialogOpen(true);
+  };
+
+  const submitEditPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editPasswordInput === 'ProtopiaSG') {
+        setIsEditPasswordDialogOpen(false);
+        setIsViewMode(false);
+        setIsEditorOpen(true);
+        const url = new URL(window.location.href);
+        url.searchParams.delete('view');
+        window.history.pushState({}, '', url);
+        toast.success("Editor unlocked");
+    } else {
+        toast.error("Incorrect password");
+    }
+  };
+
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
       <Toaster position="top-center" />
       
+      <Dialog open={isEditPasswordDialogOpen} onOpenChange={setIsEditPasswordDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+           <DialogHeader>
+             <DialogTitle>Enter Admin Password</DialogTitle>
+             <DialogDescription>
+                Please enter the password to edit this proposal.
+             </DialogDescription>
+           </DialogHeader>
+           <form onSubmit={submitEditPassword} className="space-y-4 py-2">
+              <Input 
+                 type="password" 
+                 placeholder="Password" 
+                 value={editPasswordInput}
+                 onChange={(e) => setEditPasswordInput(e.target.value)}
+                 autoFocus
+              />
+              <Button type="submit" className="w-full bg-[#3D3DF5] hover:bg-[#2b2bb8]">
+                 Unlock Editor
+              </Button>
+           </form>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -179,6 +233,29 @@ export default function App() {
                 <p className="text-[11px] text-gray-400 leading-tight">
                     Edit this URL to match the page where you are hosting this tool.
                 </p>
+              </div>
+
+              <div className="space-y-2">
+                 <Label htmlFor="share-password" className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    Access Password (Optional)
+                 </Label>
+                 <Input 
+                    id="share-password"
+                    value={data.viewPassword || ''} 
+                    onChange={(e) => {
+                        const newPassword = e.target.value;
+                        setData({
+                            ...data, 
+                            viewPassword: newPassword,
+                            passwordProtection: newPassword ? true : data.passwordProtection
+                        });
+                    }} 
+                    placeholder="Set a password to view this proposal"
+                    className="bg-gray-50 border-gray-200"
+                 />
+                 <p className="text-[11px] text-gray-400 leading-tight">
+                    If set, this password will be required to view the proposal.
+                 </p>
               </div>
 
               <div className="flex items-end space-x-2">
@@ -221,14 +298,8 @@ export default function App() {
           {isViewMode ? (
             <Button 
               variant="outline" 
-              onClick={() => {
-                setIsViewMode(false);
-                setIsEditorOpen(true);
-                const url = new URL(window.location.href);
-                url.searchParams.delete('view');
-                window.history.pushState({}, '', url);
-              }}
-              className="bg-white shadow-md border-gray-200 hover:bg-gray-50 gap-2"
+              onClick={handleEditProposalClick}
+              className="bg-white shadow-md border-gray-200 hover:bg-gray-50 gap-2 gap-2"
             >
               <PanelLeftOpen className="w-4 h-4" />
               <span className="hidden sm:inline">Edit Proposal</span>

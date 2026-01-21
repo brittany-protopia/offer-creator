@@ -28,7 +28,9 @@ export interface ProposalData {
   milestones: Milestone[];
   resources: Resource[];
   passwordProtection: boolean;
+  password?: string;
   promotionText: string;
+  viewPassword?: string;
 }
 
 export const defaultProposal: ProposalData = {

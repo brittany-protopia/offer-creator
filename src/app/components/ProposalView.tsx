@@ -37,16 +37,31 @@ export const ProposalView: React.FC<ProposalViewProps> = ({ data, isViewMode = f
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput.trim().toLowerCase() === data.prospectName.trim().toLowerCase()) {
+    const input = passwordInput.trim().toLowerCase();
+    
+    // Check custom password if set, otherwise fallback to prospect name
+    // Logic: If password is set, ONLY password works. If not set, ONLY company name works.
+    const isCustomPasswordSet = data.viewPassword && data.viewPassword.trim() !== '';
+    
+    if (isCustomPasswordSet) {
+        if (input === data.viewPassword!.trim().toLowerCase()) {
+            setIsAuthenticated(true);
+            setError(false);
+            return;
+        }
+    } else if (input === data.prospectName.trim().toLowerCase()) {
       setIsAuthenticated(true);
       setError(false);
-    } else {
-      setError(true);
+      return;
     }
+
+    setError(true);
   };
 
   // Password Gate
   if (data.passwordProtection && isViewMode && !isAuthenticated) {
+    const hasCustomPassword = data.viewPassword && data.viewPassword.trim() !== '';
+    
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4" style={{ fontFamily: "'Fustat', sans-serif" }}>
         <Card className="w-full max-w-md shadow-xl border-gray-200">
@@ -58,22 +73,27 @@ export const ProposalView: React.FC<ProposalViewProps> = ({ data, isViewMode = f
              </div>
              <CardTitle className="text-xl font-bold text-gray-900">Protected Proposal</CardTitle>
              <p className="text-sm text-gray-500">
-               Please enter your company name to view this proposal.
+               {hasCustomPassword
+                  ? "Please enter the password to view this proposal."
+                  : "Please enter your company name to view this proposal."
+               }
              </p>
           </CardHeader>
           <CardContent className="pt-8">
              <form onSubmit={handlePasswordSubmit} className="space-y-4">
                 <div className="space-y-2">
-                   <Label htmlFor="password">Company Name</Label>
+                   <Label htmlFor="password">
+                     {hasCustomPassword ? "Password" : "Company Name"}
+                   </Label>
                    <Input 
                       id="password"
-                      type="text" 
-                      placeholder={data.prospectName ? "e.g. Acme Corp" : "Enter company name"}
+                      type={hasCustomPassword ? "password" : "text"}
+                      placeholder={hasCustomPassword ? "Enter password" : (data.prospectName ? "e.g. Acme Corp" : "Enter company name")}
                       value={passwordInput}
                       onChange={(e) => setPasswordInput(e.target.value)}
                       className={error ? "border-red-500 focus-visible:ring-red-500" : ""}
                    />
-                   {error && <p className="text-xs text-red-500 font-medium">Incorrect company name. Please try again.</p>}
+                   {error && <p className="text-xs text-red-500 font-medium">Incorrect {hasCustomPassword ? "password" : "company name"}. Please try again.</p>}
                 </div>
                 <Button type="submit" className="w-full bg-[#3D3DF5] hover:bg-[#2b2bb8]">
                    View Proposal <ArrowRight className="w-4 h-4 ml-2" />
