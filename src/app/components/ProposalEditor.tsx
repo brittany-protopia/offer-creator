@@ -149,6 +149,16 @@ export const ProposalEditor: React.FC<ProposalEditorProps> = ({ data, onUpdate }
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="promotionText">Intro Text Suffix</Label>
+              <Input 
+                id="promotionText" 
+                value={data.promotionText || ''} 
+                onChange={(e) => handleInputChange('promotionText', e.target.value)}
+                placeholder="e.g. to promote at GTC in March."
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label>Activation Milestones (Upper Right Box)</Label>
               <div className="space-y-2">
                 {[0, 1, 2].map((i) => (

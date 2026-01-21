@@ -28,6 +28,7 @@ export interface ProposalData {
   milestones: Milestone[];
   resources: Resource[];
   passwordProtection: boolean;
+  promotionText: string;
 }
 
 export const defaultProposal: ProposalData = {
@@ -42,6 +43,7 @@ export const defaultProposal: ProposalData = {
   modelType: "Llama 3 70B",
   calendlyUrl: "https://calendly.com",
   passwordProtection: false,
+  promotionText: " to promote at GTC in March.",
   resources: [
     { title: "Stained Glass Whitepaper", url: "#" },
     { title: "Technical Documentation", url: "#" }

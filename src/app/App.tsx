@@ -218,16 +218,31 @@ export default function App() {
       <div className="flex-1 relative overflow-y-auto overflow-x-hidden">
         {/* Floating Controls */}
         <div className="fixed top-4 left-4 z-50 flex gap-2 print:hidden">
-          {!isViewMode && (
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={toggleEditor}
-            className="bg-white shadow-md border-gray-200 hover:bg-gray-50"
-            title={isEditorOpen ? "Close Editor" : "Open Editor"}
-          >
-            {isEditorOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
-          </Button>
+          {isViewMode ? (
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsViewMode(false);
+                setIsEditorOpen(true);
+                const url = new URL(window.location.href);
+                url.searchParams.delete('view');
+                window.history.pushState({}, '', url);
+              }}
+              className="bg-white shadow-md border-gray-200 hover:bg-gray-50 gap-2"
+            >
+              <PanelLeftOpen className="w-4 h-4" />
+              <span className="hidden sm:inline">Edit Proposal</span>
+            </Button>
+          ) : (
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={toggleEditor}
+              className="bg-white shadow-md border-gray-200 hover:bg-gray-50"
+              title={isEditorOpen ? "Close Editor" : "Open Editor"}
+            >
+              {isEditorOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
+            </Button>
           )}
           
           <Button 

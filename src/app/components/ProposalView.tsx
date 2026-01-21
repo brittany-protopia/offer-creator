@@ -125,7 +125,7 @@ export const ProposalView: React.FC<ProposalViewProps> = ({ data, isViewMode = f
               Hi <span className="font-semibold text-gray-900">{data.prospectName}</span> team,
               <br className="mb-4 block"/>
               For select customers, we are introducing the <strong className="text-[#3D3DF5]">Stained Glass Activation Credit</strong>. 
-              We want to recruit high-value reference use cases to promote at <strong>GTC in March</strong>.
+              We want to recruit high-value reference use cases{data.promotionText}
               <br className="mb-2 block"/>
               Commit to your activation timeline within 45 days, and <strong>earn your money back</strong>—receiving a credit for your entire <span className="whitespace-nowrap font-bold text-gray-900">{formattedFee}</span> license fee.
             </p>
